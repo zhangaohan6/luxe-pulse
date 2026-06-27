@@ -74,17 +74,21 @@ def build(records: list[dict], top_brands: int = 18) -> str:
         else:
             L.append(f"- **{aspect}** — {best}")
 
-    L.append("\n## Theme momentum (recent vs earlier window)")
-    for term, rs, es, lift in trends.theme_momentum(records):
-        arrow = "📈 rising" if lift > 1.25 else "📉 falling" if lift < 0.8 else "➡️ flat"
-        L.append(f"- **{term}** — {arrow}  (×{lift};  {es*100:.2f}% → {rs*100:.2f}%)")
+    has_dates = sum(1 for r in records if (r.get("date") or "")[:7]) > len(records) // 2
+    if has_dates:
+        L.append("\n## Theme momentum (recent vs earlier window)")
+        for term, rs, es, lift in trends.theme_momentum(records):
+            arrow = "📈 rising" if lift > 1.25 else "📉 falling" if lift < 0.8 else "➡️ flat"
+            L.append(f"- **{term}** — {arrow}  (×{lift};  {es*100:.2f}% → {rs*100:.2f}%)")
 
-    L.append("\n## Other rising terms")
-    seen = 0
-    for term, rs, es, lift in rising:
-        if lift <= 1.25 or seen >= 6 or term in trends.THEMES:
-            continue
-        L.append(f"- 📈 **{term}** — ×{lift}  ({es*100:.2f}% → {rs*100:.2f}%)")
-        seen += 1
+        L.append("\n## Other rising terms")
+        seen = 0
+        for term, rs, es, lift in rising:
+            if lift <= 1.25 or seen >= 6 or term in trends.THEMES:
+                continue
+            L.append(f"- 📈 **{term}** — ×{lift}  ({es*100:.2f}% → {rs*100:.2f}%)")
+            seen += 1
+    else:
+        L.append("\n_(no timestamps in this dataset — theme-momentum / trend sections skipped)_")
 
     return "\n".join(L) + "\n"

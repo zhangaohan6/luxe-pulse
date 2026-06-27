@@ -61,6 +61,13 @@ straight through the same pipeline (no scraping, no manual cleaning):
 - Aspect leaders differ by dimension (e.g. *price* sentiment led by Youth To The People,
   Sulwhasoo) — exactly the brand-vs-brand, dimension-by-dimension read an insight team needs.
 
+**Second real dataset — 22,641 apparel reviews.** The same engine runs on the
+**Women's E-Commerce Clothing Reviews** dataset (`--schema womens`) — a single anonymised
+retailer with no brand field, so it's analysed **by product category**. It surfaces the
+aspect that dominates apparel: **fit/sizing sentiment is weakest on bottoms & loungewear**
+(Pants, Lounge, Sleep) and strongest on Swim/Blouses — a concrete merchandising signal, and
+proof the engine generalises across very different review corpora.
+
 > The repo also ships a **seeded synthetic generator** (`generate_synthetic`) with a baked-in
 > *quiet luxury* ↑ / *logomania* ↓ storyline, so `python3 analyze_pulse.py` runs with zero
 > setup and the tests are deterministic. The 24 MB review CSV is **not** committed

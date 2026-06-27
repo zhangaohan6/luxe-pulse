@@ -156,7 +156,15 @@ def load_csv(path: str, schema: str = "generic", brand_map: dict | None = None) 
                     return cols[n]
             return None
 
-        if schema == "sephora":
+        if schema == "womens":
+            # Women's E-Commerce Clothing Reviews — single anonymised retailer, no brand
+            # column; use the product "Class Name" as the comparison dimension.
+            c_text = pick("review text", "review_text", "text")
+            c_brand = pick("class name", "class")
+            c_rating = pick("rating", "stars")
+            c_prod = pick("department name", "department")
+            c_date = None
+        elif schema == "sephora":
             c_text = pick("review_text", "review", "text")
             c_brand = pick("brand_name", "brand")
             c_rating = pick("rating", "stars")

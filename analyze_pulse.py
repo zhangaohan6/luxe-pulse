@@ -18,7 +18,7 @@ from pulse.sentiment import score_records
 def main():
     ap = argparse.ArgumentParser(description="Luxury brand social/review pulse")
     ap.add_argument("--real", metavar="CSV", help="path to a real review/social CSV")
-    ap.add_argument("--schema", default="generic", choices=["generic", "sephora"])
+    ap.add_argument("--schema", default="generic", choices=["generic", "sephora", "womens"])
     ap.add_argument("--brand", nargs="*", help="filter to these brands")
     ap.add_argument("-n", type=int, default=4000, help="synthetic sample size")
     ap.add_argument("--out", default="out/pulse_report.md")
