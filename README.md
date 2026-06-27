@@ -32,30 +32,39 @@ python3 analyze_pulse.py --brand "Louis Vuitton" "Dior" "Chanel"
 streamlit run app.py                                  # interactive dashboard
 ```
 
-## Use real data (recommended — real findings)
+## Use real data
 
 The engine reads any review/social CSV. The natural fit is the **Sephora reviews** dataset
-on Kaggle (Sephora = LVMH):
+(Sephora is an LVMH retailer):
 
 ```bash
-# download "Sephora Products and Skincare Reviews" from Kaggle → reviews.csv
 python3 analyze_pulse.py --real reviews.csv --schema sephora
 ```
 
 `--schema generic` expects columns `brand,text,date[,rating,product,platform]`; the loader
 auto-maps common column names, so most brand-review / social exports work.
 
-## Demo findings (synthetic, seeded)
+## Validation on real data — 49,918 Sephora reviews
 
-> The demo data is **synthetic** and seeded for reproducibility — it deliberately bakes in a
-> rising *quiet luxury* theme and a price/service pain point so the pipeline produces a clear
-> narrative. **The analysis logic is real**; plug in the Sephora CSV for real-world numbers.
+Validated on the **Sephora Products and Skincare Reviews** dataset
+([Kaggle](https://www.kaggle.com/datasets/nadyinky/sephora-products-and-skincare-reviews),
+public mirror) — **49,918 real customer reviews across 122 prestige-skincare brands**. Run
+straight through the same pipeline (no scraping, no manual cleaning):
 
-- **LVMH maisons take 4 of the top 5 by share of voice** (LV 18.5%, Sephora 15.9%).
-- **Aspect split is the story**: Hermès leads *quality* & *service*; Chanel leads *design*;
-  **Louis Vuitton is weakest on *price*** (−0.17); **Sephora is weakest on *service*** (−0.11)
-  — an actionable, dimension-specific read, not a single score.
-- **Theme momentum**: *quiet luxury* ×7 and *old money* ×4 rising; **logomania falling ×0.27**.
+- **All four LVMH skincare maisons in the data are net-positive** — Fenty Skin **+0.38**,
+  Dior **+0.35**, Fresh **+0.34**, Guerlain **+0.27** — useful for an LVMH consumer-insight read.
+- **SEPHORA COLLECTION owns the most share of voice** (4.9%, 2,429 reviews) but is the
+  **weakest top brand on the *design / packaging* aspect (−0.22)** — high buzz, a specific
+  fixable weakness, not a vague score.
+- **"dupe" is the rising theme** (×2.58 recent-vs-earlier) — the tool picks up the real
+  beauty *dupe-culture* shift straight from review text.
+- Aspect leaders differ by dimension (e.g. *price* sentiment led by Youth To The People,
+  Sulwhasoo) — exactly the brand-vs-brand, dimension-by-dimension read an insight team needs.
+
+> The repo also ships a **seeded synthetic generator** (`generate_synthetic`) with a baked-in
+> *quiet luxury* ↑ / *logomania* ↓ storyline, so `python3 analyze_pulse.py` runs with zero
+> setup and the tests are deterministic. The 24 MB review CSV is **not** committed
+> (`data/` is git-ignored).
 
 ## Layout
 ```

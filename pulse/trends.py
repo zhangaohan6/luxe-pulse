@@ -7,6 +7,9 @@ from collections import Counter, defaultdict
 
 from .sentiment import score, tokenize
 
+SMOOTH = 0.0008   # additive share-floor so 0→tiny doesn't blow up the lift ratio
+LIFT_CAP = 25.0   # cap reported lift for readability
+
 STOP = set("""a an the and or but to of in on for with at by from this that these those
 is are was were be been being it its as i you we they he she my your our their me us
 just so very really too also more most so-called got get really thoughts been eyeing
@@ -65,7 +68,7 @@ def theme_momentum(records: list[dict]) -> list[tuple]:
     for t in THEMES:
         es = sum(t in x for x in early) / te
         rs = sum(t in x for x in recent) / tr
-        lift = (rs + 1e-6) / (es + 1e-6)
+        lift = min(LIFT_CAP, (rs + SMOOTH) / (es + SMOOTH))
         rows.append((t, round(rs, 4), round(es, 4), round(lift, 2)))
     rows.sort(key=lambda x: x[3], reverse=True)
     return rows
@@ -93,9 +96,9 @@ def rising_terms(records: list[dict], top: int = 12) -> list[tuple]:
     rows = []
     for t in terms:
         es, rs = ce.get(t, 0) / te, cr.get(t, 0) / tr
-        if cr.get(t, 0) + ce.get(t, 0) < 8:   # ignore rare noise
+        if cr.get(t, 0) + ce.get(t, 0) < 20:   # ignore rare noise
             continue
-        lift = (rs + 1e-6) / (es + 1e-6)
+        lift = min(LIFT_CAP, (rs + SMOOTH) / (es + SMOOTH))
         rows.append((t, round(rs, 4), round(es, 4), round(lift, 2)))
     rows.sort(key=lambda x: x[3], reverse=True)
     return rows[:top]
